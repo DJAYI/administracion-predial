@@ -1,0 +1,72 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "shadcn": {
+      "type": "local",
+      "command": [
+        "npx",
+        "shadcn@latest",
+        "mcp"
+      ],
+      "enabled": true
+    }
+  },
+  "agent": {
+    "orquestador": {
+      "description": "Planifica, descompone tareas y decide qué sub-agente debe ejecutar cada paso",
+      "mode": "subagent",
+      "prompt": "{file:.agents/orchestrator.md}",
+      "tools": {
+        "task": true,
+        "read": true,
+        "grep": true,
+        "glob": true,
+        "edit": false,
+        "write": false,
+        "bash": false
+      }
+    },
+    "memoria": {
+      "description": "Registra cambios puntuales, decisiones técnicas y patrones establecidos",
+      "mode": "subagent",
+      "prompt": "{file:.agents/memory.md}",
+      "tools": {
+        "read": true,
+        "grep": true,
+        "glob": true,
+        "write": true,
+        "edit": false,
+        "bash": false,
+        "task": false
+      }
+    },
+    "diseno": {
+      "description": "Guidelines de UI/UX y sistema de diseño de GEOPIX",
+      "mode": "subagent",
+      "prompt": "{file:.agents/design.md}",
+      "tools": {
+        "read": true,
+        "grep": true,
+        "glob": true,
+        "edit": false,
+        "write": false,
+        "bash": false,
+        "task": false
+      }
+    },
+    "ejecutor": {
+      "description": "Escribe código con el stack especializado de GEOPIX (Next.js 16, TypeScript, shadcn/ui)",
+      "mode": "subagent",
+      "prompt": "{file:.agents/executor.md}",
+      "tools": {
+        "read": true,
+        "grep": true,
+        "glob": true,
+        "edit": true,
+        "write": true,
+        "bash": true,
+        "task": false
+      }
+    }
+  }
+}
