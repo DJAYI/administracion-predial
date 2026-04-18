@@ -35,10 +35,10 @@ public class GetDepartmentsAndMunicipalities {
         // 2. Procesar los DTOs para construir las Entidades JPA
         // Usamos un Map para evitar crear departamentos duplicados y agrupar los municipios
         Map<String, Departamento> departamentoMap = new HashMap<>();
+        Map<String, Municipio> municipioProcessedMap = new HashMap<>(); // Track processed municipalities by name
 
         for (MunicipioRawDTO dto : dtoList) {
 
-            // Si el departamento no existe en el map, lo creamos
             Departamento departamento = departamentoMap.computeIfAbsent(dto.dpto(), key -> {
                 Departamento newDepto = new Departamento();
                 newDepto.setName(dto.dpto());
@@ -46,14 +46,18 @@ public class GetDepartmentsAndMunicipalities {
                 return newDepto;
             });
 
-            // Creamos la entidad Municipio
-            Municipio municipio = new Municipio();
-            municipio.setCode_mun(dto.codMpio());
-            municipio.setName(dto.nomMpio());
+            // If a municipality with this name was already processed, skip it to avoid unique constraint violation
+            if (municipioProcessedMap.containsKey(dto.nomMpio())) {
+                continue;
+            }
 
-            // Establecemos la relación bidireccional
+            Municipio municipio = new Municipio();
+            municipio.setCodeMun(dto.codMpio());
+            municipio.setName(dto.nomMpio());
             municipio.setDepartamento(departamento);
+
             departamento.getMunicipios().add(municipio);
+            municipioProcessedMap.put(dto.nomMpio(), municipio); // Mark as processed
         }
 
         // 3. Retornar la lista de entidades listas para ser persistidas

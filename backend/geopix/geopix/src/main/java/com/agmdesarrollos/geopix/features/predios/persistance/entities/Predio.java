@@ -177,10 +177,9 @@ public class Predio {
         return totalM2 + AREA_SUFFIX;
     }
 
-    @OneToMany(mappedBy = "predios")
+    @OneToMany(mappedBy = "predio")
     List<Titular> owners;
 
-    @OneToOne(mappedBy = "predios")
-    @JoinColumn(name = "deuda_id")
+    @OneToOne(mappedBy = "predio")
     Deuda debt;
 }

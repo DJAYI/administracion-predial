@@ -24,6 +24,6 @@ public class Departamento {
     @Column(unique = true)
     String name;
 
-    @OneToMany(mappedBy = "departamentos")
+    @OneToMany(mappedBy = "departamento", cascade = CascadeType.ALL)
     Set<Municipio> municipios;
 }

@@ -42,7 +42,7 @@ public class Deuda {
     @OneToMany(mappedBy = "deuda")
     List<Pago> paymentHistory;
 
-    @OneToOne
-    @JoinColumn(name = "predio_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "predio_id", referencedColumnName = "id")
     Predio predio;
 }

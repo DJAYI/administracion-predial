@@ -19,8 +19,8 @@ public class Municipio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(unique = true, nullable = false)
-    String code_mun;
+    @Column(unique = true, nullable = false, name = "code_mun")
+    String codeMun;
 
     @Column(unique = true, nullable = false)
     String name;
