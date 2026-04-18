@@ -1,5 +1,6 @@
 package com.agmdesarrollos.geopix.features.economicreports.persistance.entities;
 
+import com.agmdesarrollos.geopix.features.predios.persistance.entities.Predio;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -18,17 +19,30 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Deuda {
 
-    enum DebtStatus { CURRENT, OVERDUE, DELINQUENT, IN_COLLECTION, SEIZED, FORECLOSED, PRESCRIBED }
+    enum DebtStatus { AL_DIA, SALDO_A_FAVOR, EN_DEUDA }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    Double debtTotal;
-    Double totalPaid;
+    @Column(unique = true)
+    String propertyNumber;
 
-    @OneToMany
+    Double totalBalance;      // Sum of all pending vigencias
+    Double totalPaidToDate;
+    Integer paymentCount;
+
+    @Enumerated(EnumType.STRING)
+    DebtStatus globalStatus;
+
+    @OneToMany(mappedBy = "deuda", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("year ASC") // Critical for "General" payment logic (oldest first)
     List<Vigencia> vigencias;
 
+    @OneToMany(mappedBy = "deuda")
+    List<Pago> paymentHistory;
 
+    @OneToOne
+    @JoinColumn(name = "predio_id")
+    Predio predio;
 }

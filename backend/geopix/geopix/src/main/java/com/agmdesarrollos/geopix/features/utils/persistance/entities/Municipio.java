@@ -1,4 +1,4 @@
-package com.agmdesarrollos.geopix.features.wizard.persistance;
+package com.agmdesarrollos.geopix.features.utils.persistance.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,6 +19,10 @@ public class Municipio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
+    @Column(unique = true, nullable = false)
+    String code_mun;
+
+    @Column(unique = true, nullable = false)
     String name;
 
     @ManyToOne

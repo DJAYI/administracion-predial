@@ -1,9 +1,10 @@
-package com.agmdesarrollos.geopix.features.wizard.persistance;
+package com.agmdesarrollos.geopix.features.utils.persistance.entities;
 
-import com.agmdesarrollos.geopix.features.predios.persistance.entities.Predio;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,18 +13,17 @@ import lombok.experimental.FieldDefaults;
 @Setter
 
 @Entity
-@Table(name = "borradores")
+@Table(name = "departamentos")
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Borrador {
-
+public class Departamento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @OneToOne
-    @JoinColumn(name = "predio_id")
-    Predio predio;
+    @Column(unique = true)
+    String name;
 
-    Integer step;
+    @OneToMany(mappedBy = "departamentos")
+    Set<Municipio> municipios;
 }

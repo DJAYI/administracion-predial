@@ -1,7 +1,8 @@
 package com.agmdesarrollos.geopix.features.predios.persistance.entities;
 
-import com.agmdesarrollos.geopix.features.wizard.persistance.Departamento;
-import com.agmdesarrollos.geopix.features.wizard.persistance.Municipio;
+import com.agmdesarrollos.geopix.features.economicreports.persistance.entities.Deuda;
+import com.agmdesarrollos.geopix.features.utils.persistance.entities.Departamento;
+import com.agmdesarrollos.geopix.features.utils.persistance.entities.Municipio;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -14,35 +15,36 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "predios", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"nationalPropertyNumber"})
+        @UniqueConstraint(columnNames = {"national_property_number"})
 })
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Predio {
 
-    // --- CONSTANTES (Para eliminar Magic Strings) ---
-    public static final String DEFAULT_NO_INFO = "SIN INFORMACION";
-    public static final String OP_SI = "SI";
+    // --- CONSTANTS ---
+    public static final String DEFAULT_NO_INFO = "NO INFORMATION";
+    public static final String OP_YES = "YES";
     public static final String AREA_SUFFIX = ".00 m²";
     private static final int HA_TO_M2_FACTOR = 10000;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     Long id;
 
-    // --- DATOS BÁSICOS ---
+    // --- BASIC DATA ---
 
-    @NotBlank(message = "Matrícula inmobiliaria es obligatoria")
-    @Column(length = 30, nullable = false)
-    String realStateRegistration;
+    @NotBlank(message = "Real estate registration is mandatory")
+    @Column(name = "real_estate_registration", length = 30, nullable = false)
+    String realEstateRegistration;
 
-    @Column(length = 30, unique = true)
+    @Column(name = "national_property_number", length = 30, unique = true)
     String nationalPropertyNumber;
 
-    @Column(length = 30)
+    @Column(name = "cadastral_reference", length = 30)
     String cadastralReference = DEFAULT_NO_INFO;
 
-    @Column(length = 30)
-    String nationalPropertyNumberGEO = DEFAULT_NO_INFO;
+    @Column(name = "national_property_number_geo", length = 30)
+    String nationalPropertyNumberGeo = DEFAULT_NO_INFO;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -51,16 +53,20 @@ public class Predio {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "municipalities_id")
-    Municipio municipalities;
+    @JoinColumn(name = "municipality_id")
+    Municipio municipality;
 
     @NotEmpty
     @ManyToMany
-    @JoinTable(name = "predio_condiciones")
+    @JoinTable(
+            name = "property_conditions",
+            joinColumns = @JoinColumn(name = "property_id"),
+            inverseJoinColumns = @JoinColumn(name = "condition_type_id")
+    )
     List<TipoPredio> propertyConditions;
 
-    @Column(nullable = false)
-    String hasEasement; // Valores: SI, NO, SIN INFORMACIÓN
+    @Column(name = "has_easement", nullable = false)
+    String hasEasement;
 
     @ManyToOne
     @JoinColumn(name = "easement_type_id")
@@ -71,71 +77,92 @@ public class Predio {
     TipoSuelo soilType;
 
     @ManyToOne
-    @JoinColumn(name = "destiny_type_id")
-    TipoDestino destinyType;
+    @JoinColumn(name = "destination_type_id")
+    TipoDestino destinationType;
 
     @ManyToOne
-    @JoinColumn(name = "tipo_titularidad_id")
-    TipoTitularidad tipoTitularidad;
+    @JoinColumn(name = "ownership_type_id")
+    TipoTitularidad ownershipType;
 
     @ManyToOne
-    @JoinColumn(name = "expediente_id")
-    TipoExpediente expediente;
+    @JoinColumn(name = "record_type_id")
+    TipoExpediente recordType;
 
     @NotBlank
-    @Column(length = 255)
+    @Column(name = "address", length = 255)
     String address;
 
     @NotBlank
-    @Column(length = 255)
+    @Column(name = "alias", length = 255)
     String alias;
 
     @NotNull
+    @Column(name = "environmental_impact")
     Boolean environmentalImpact;
 
-    @Column(length = 300)
+    @Column(name = "observations", length = 300)
     String observations;
 
-    // --- DATOS FÍSICOS ---
+    // --- PHYSICAL DATA ---
 
-    Integer areaVurHa;
-    Integer areaVurM2;
-    String areaVurTotal;
+    @Column(name = "vur_area_ha")
+    Integer vurAreaHa;
 
-    Integer areaCatastroHa;
-    Integer areaCatastroM2;
-    String areaCatastroTotal;
+    @Column(name = "vur_area_m2")
+    Integer vurAreaM2;
 
-    Integer areaEscriturasHa;
-    Integer areaEscriturasM2;
-    String areaEscriturasTotal;
+    @Column(name = "vur_area_total")
+    String vurAreaTotal;
 
-    Integer areaMedicionHa;
-    Integer areaMedicionM2;
-    String areaMedicionTotal;
+    @Column(name = "cadastral_area_ha")
+    Integer cadastralAreaHa;
 
-    @Column(length = 500)
-    String cabidaLinderos;
+    @Column(name = "cadastral_area_m2")
+    Integer cadastralAreaM2;
 
-    // --- LÓGICA DE NEGOCIO Y CICLO DE VIDA ---
+    @Column(name = "cadastral_area_total")
+    String cadastralAreaTotal;
+
+    @Column(name = "deed_area_ha")
+    Integer deedAreaHa;
+
+    @Column(name = "deed_area_m2")
+    Integer deedAreaM2;
+
+    @Column(name = "deed_area_total")
+    String deedAreaTotal;
+
+    @Column(name = "measured_area_ha")
+    Integer measuredAreaHa;
+
+    @Column(name = "measured_area_m2")
+    Integer measuredAreaM2;
+
+    @Column(name = "measured_area_total")
+    String measuredAreaTotal;
+
+    @Column(name = "boundaries_and_dimensions", length = 500)
+    String boundariesAndDimensions;
+
+    // --- BUSINESS LOGIC & LIFECYCLE ---
 
     @PrePersist
     @PreUpdate
     public void validateAndCalculate() {
-        // Manejo de valores nulos o vacíos para referencias
+        // Handle null or empty values for references
         this.cadastralReference = sanitizeString(this.cadastralReference);
-        this.nationalPropertyNumberGEO = sanitizeString(this.nationalPropertyNumberGEO);
+        this.nationalPropertyNumberGeo = sanitizeString(this.nationalPropertyNumberGeo);
 
-        // Validación RG_01: Servidumbre
-        if (OP_SI.equalsIgnoreCase(this.hasEasement) && this.easementType == null) {
-            throw new IllegalStateException("Cuando existe servidumbre, el campo Tipo de Servidumbre no puede estar vacío.");
+        // Validation RG_01: Easement
+        if (OP_YES.equalsIgnoreCase(this.hasEasement) && this.easementType == null) {
+            throw new IllegalStateException("When an easement exists, the Easement Type field cannot be empty.");
         }
 
-        // Cálculos de áreas físicas
-        this.areaVurTotal = formatArea(this.areaVurHa, this.areaVurM2);
-        this.areaCatastroTotal = formatArea(this.areaCatastroHa, this.areaCatastroM2);
-        this.areaEscriturasTotal = formatArea(this.areaEscriturasHa, this.areaEscriturasM2);
-        this.areaMedicionTotal = formatArea(this.areaMedicionHa, this.areaMedicionM2);
+        // Physical area calculations
+        this.vurAreaTotal = formatArea(this.vurAreaHa, this.vurAreaM2);
+        this.cadastralAreaTotal = formatArea(this.cadastralAreaHa, this.cadastralAreaM2);
+        this.deedAreaTotal = formatArea(this.deedAreaHa, this.deedAreaM2);
+        this.measuredAreaTotal = formatArea(this.measuredAreaHa, this.measuredAreaM2);
     }
 
     private String sanitizeString(String value) {
@@ -149,4 +176,11 @@ public class Predio {
         long totalM2 = ((long) ha * HA_TO_M2_FACTOR) + m2;
         return totalM2 + AREA_SUFFIX;
     }
+
+    @OneToMany(mappedBy = "predios")
+    List<Titular> owners;
+
+    @OneToOne(mappedBy = "predios")
+    @JoinColumn(name = "deuda_id")
+    Deuda debt;
 }
