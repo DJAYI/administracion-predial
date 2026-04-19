@@ -2,10 +2,12 @@ package com.agmdesarrollos.geopix.security.http.controllers;
 
 import com.agmdesarrollos.geopix.security.http.dto.*;
 import com.agmdesarrollos.geopix.security.http.services.AuthHttpService;
+import jakarta.annotation.security.PermitAll;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,11 +25,13 @@ public class AuthController {
         return ResponseEntity.ok(authService.login(request, response));
     }
 
+    @PermitAll
     @GetMapping("/me")
     public ResponseEntity<MeResponseDTO> me() {
         return ResponseEntity.ok(authService.getCurrentUser());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/register")
     public ResponseEntity<RegisterResponseDTO> register(
             @Valid @RequestBody RegisterRequestDTO request
