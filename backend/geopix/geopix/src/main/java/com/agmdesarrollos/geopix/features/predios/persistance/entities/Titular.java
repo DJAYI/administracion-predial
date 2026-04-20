@@ -5,6 +5,8 @@ import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
@@ -57,11 +59,11 @@ public class Titular {
 
     String deedNumber;      // RNG-09: Obligatorio si existe deedDate
 
-    LocalDateTime deedDate;  // Fecha Escritura
+    LocalDate deedDate;  // Fecha Escritura
 
-    LocalDateTime annotationDate; // Fecha Anotación (RNG_05: >= deedDate)
+    LocalDate annotationDate; // Fecha Anotación (RNG_05: >= deedDate)
 
-    LocalDateTime promiseDate;    // Fecha Promesa (RNG_01)
+    LocalDate promiseDate;    // Fecha Promesa (RNG_01)
 
     String trustCode;             // Código Fideicomiso (RNG-11)
 
