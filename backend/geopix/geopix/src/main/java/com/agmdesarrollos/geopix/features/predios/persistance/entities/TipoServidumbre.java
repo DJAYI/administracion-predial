@@ -3,6 +3,8 @@ package com.agmdesarrollos.geopix.features.predios.persistance.entities;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,7 +14,8 @@ import lombok.experimental.FieldDefaults;
 
 @Entity
 @Table(name = "tipos_servidumbre")
-
+@SQLDelete(sql = "UPDATE tipos_servidumbre SET deleted = true WHERE id=?")
+@SQLRestriction("deleted = false")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 
 public class TipoServidumbre {
@@ -22,4 +25,7 @@ public class TipoServidumbre {
     Long id;
 
     String name;
+
+    @Column(nullable = false)
+    boolean deleted = Boolean.FALSE;
 }
