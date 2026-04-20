@@ -63,7 +63,7 @@ public class Predio {
             joinColumns = @JoinColumn(name = "property_id"),
             inverseJoinColumns = @JoinColumn(name = "condition_type_id")
     )
-    List<TipoPredio> propertyConditions;
+    List<TipoCondicionPredio> propertyConditions;
 
     @Column(name = "has_easement", nullable = false)
     String hasEasement;

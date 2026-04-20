@@ -5,72 +5,70 @@ import java.util.List;
 
 public record DatosBasicosPredioRequest(
 
-        @NotBlank(message = "La matrícula inmobiliaria es obligatoria")
-        @Size(max = 30, message = "La matrícula no debe exceder los 30 caracteres")
-        @Pattern(regexp = "^\\d+$", message = "La matrícula debe ser numérica")
+        @NotBlank(message = "Real estate registration is mandatory")
+        @Size(max = 30, message = "Registration must not exceed 30 characters")
+        @Pattern(regexp = "^\\d+$", message = "Registration must be numeric")
         String realEstateRegistration,
 
-        @Size(max = 30, message = "El NPN no debe exceder los 30 caracteres")
-        @Pattern(regexp = "^\\d*$", message = "El NPN debe ser numérico")
+        @Size(max = 30, message = "NPN must not exceed 30 characters")
+        @Pattern(regexp = "^\\d*$", message = "NPN must be numeric")
         String nationalPropertyNumber,
 
-        @Size(max = 30, message = "La referencia catastral no debe exceder los 30 caracteres")
+        @Size(max = 30, message = "Cadastral reference must not exceed 30 characters")
         String cadastralReference,
 
-        @Size(max = 30, message = "La referencia NPN GEO no debe exceder los 30 caracteres")
+        @Size(max = 30, message = "NPN GEO reference must not exceed 30 characters")
         String nationalPropertyNumberGeo,
 
-        @NotNull(message = "El departamento es obligatorio")
+        @NotNull(message = "Department is mandatory")
         Long departmentId,
 
-        @NotNull(message = "El municipio es obligatorio")
+        @NotNull(message = "Municipality is mandatory")
         Long municipalityId,
 
-        @NotEmpty(message = "Debe seleccionar al menos un tipo de predio")
+        @NotEmpty(message = "At least one property condition must be selected")
         List<Long> propertyConditions,
 
-        @NotBlank(message = "Debe especificar si tiene servidumbre")
-        @Pattern(regexp = "^(SI|NO|SIN INFORMACION)$", message = "Valores permitidos: SI, NO, SIN INFORMACION")
+        @NotBlank(message = "Must specify if it has easement")
+        @Pattern(regexp = "^(YES|NO|NO INFORMATION)$", message = "Allowed values: YES, NO, NO INFORMATION")
         String hasEasement,
 
-        // Validación condicional recomendada en Service: Obligatorio si hasEasement == "SI"
         Long easementTypeId,
 
-        @NotNull(message = "El tipo de suelo es obligatorio")
+        @NotNull(message = "Soil type is mandatory")
         Long soilTypeId,
 
-        @NotNull(message = "El destino es obligatorio")
+        @NotNull(message = "Destination is mandatory")
         Long destinationTypeId,
 
-        @NotNull(message = "El tipo de titularidad es obligatorio")
+        @NotNull(message = "Ownership type is mandatory")
         Long ownershipTypeId,
 
-        @NotNull(message = "El tipo de expediente es obligatorio")
+        @NotNull(message = "Record type is mandatory")
         Long recordTypeId,
 
-        @NotBlank(message = "La dirección es obligatoria")
-        @Size(max = 255, message = "La dirección no debe exceder los 255 caracteres")
+        @NotBlank(message = "Address is mandatory")
+        @Size(max = 255, message = "Address must not exceed 255 characters")
         String address,
 
-        @NotBlank(message = "El alias es obligatorio")
-        @Size(max = 255, message = "El alias no debe exceder los 255 caracteres")
+        @NotBlank(message = "Alias is mandatory")
+        @Size(max = 255, message = "Alias must not exceed 255 characters")
         String alias,
 
-        @NotNull(message = "La afectación ambiental es obligatoria")
+        @NotNull(message = "Environmental impact is mandatory")
         Boolean environmentalImpact,
 
-        @Size(max = 300, message = "Las observaciones no deben exceder los 300 caracteres")
+        @Size(max = 300, message = "Observations must not exceed 300 characters")
         String observations
 ) {
     /**
-     * Constructor compacto para aplicar la lógica de "SIN INFORMACIÓN"
-     * en campos opcionales que lleguen nulos o vacíos.
+     * Compact constructor to apply "NO INFORMATION" logic
+     * for optional fields that arrive null or blank.
      */
     public DatosBasicosPredioRequest {
-        cadastralReference = (cadastralReference == null || cadastralReference.isBlank()) ? "SIN INFORMACION" : cadastralReference;
-        nationalPropertyNumberGeo = (nationalPropertyNumberGeo == null || nationalPropertyNumberGeo.isBlank()) ? "SIN INFORMACION" : nationalPropertyNumberGeo;
-        observations = (observations == null || observations.isBlank()) ? "SIN INFORMACION" : observations;
-        // El NPN según tabla es NO obligatorio pero permite edición
-        nationalPropertyNumber = (nationalPropertyNumber == null || nationalPropertyNumber.isBlank()) ? "SIN INFORMACION" : nationalPropertyNumber;
+        cadastralReference = (cadastralReference == null || cadastralReference.isBlank()) ? "NO INFORMATION" : cadastralReference;
+        nationalPropertyNumberGeo = (nationalPropertyNumberGeo == null || nationalPropertyNumberGeo.isBlank()) ? "NO INFORMATION" : nationalPropertyNumberGeo;
+        observations = (observations == null || observations.isBlank()) ? "NO INFORMATION" : observations;
+        nationalPropertyNumber = (nationalPropertyNumber == null || nationalPropertyNumber.isBlank()) ? "NO INFORMATION" : nationalPropertyNumber;
     }
 }
