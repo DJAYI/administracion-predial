@@ -1,46 +1,46 @@
-# Geopix Backend - Autenticación y Despliegue
+# GEOPIX - Sistema de Gestión Predial
 
-## Descripción
-Este proyecto implementa un sistema de gestión de predios con autenticación segura basada en JWT y persistencia en Redis.
+## Lógica de Negocio y Reglas del Sistema
 
-## Requisitos
-- Docker y Docker Compose
-- Java 17 (para desarrollo local)
-- Maven (o `./mvnw`)
+### 1. Gestión de Predios (Unificada)
+El sistema permite la gestión integral de un predio (Básicos, Físicos y Titularidad) a través de un único flujo transaccional.
 
-## Configuración
-Copia el archivo `.env.example` a `.env` y ajusta las variables si es necesario:
-```bash
-cp .env.example .env
-```
+*   **Creación:** Requiere como mínimo la información de Datos Básicos (Matrícula Inmobiliaria).
+*   **Actualización:** Permite actualizaciones parciales enviando solo las secciones necesarias.
+*   **Placeholders:** Campos opcionales no diligenciados se marcan automáticamente como `"NO INFORMATION"`.
 
-## Despliegue con Docker
-Para levantar toda la infraestructura (App, PostgreSQL, Redis):
-```bash
-docker-compose up --build
-```
+### 2. Datos Físicos (Áreas y Linderos)
+*   **Fórmula de Área Total:** `Total (m²) = (Hectáreas × 10.000) + Metros²`.
+*   **RNG-01:** Los metros cuadrados deben estar entre `0` y `9.999`. Si llega a `10.000`, se debe sumar 1 a las hectáreas.
+*   **Independencia:** Las áreas VUR, Catastro, Escrituras y Medición son independientes.
 
-La aplicación estará disponible en `http://localhost:8080`.
+### 3. Titularidad y Derechos (%)
+*   **Suma 100%:** La sumatoria de los derechos (%) de todos los titulares asociados a un predio **debe ser exactamente 100%**. El sistema bloquea el guardado si no se cumple.
+*   **Persona Natural vs Jurídica:**
+    *   Si el documento es `NIT`, se exige `Razón Social`.
+    *   Si es otro tipo, se exigen `Nombres` y `Primer Apellido`.
+*   **Validación de Fechas:** La `Fecha de Anotación` debe ser mayor o igual a la `Fecha de Escritura`.
+*   **Dependencias:** Si existe `Fecha de Escritura`, el `Número de Escritura` es obligatorio. Si hay `Escritura`, la `Notaría` es obligatoria.
 
-## Endpoints de Autenticación
+### 4. Seguridad y Roles
+El sistema implementa seguridad basada en JWT y control de acceso por roles (RBAC):
 
-### 1. Login
-`POST /api/v1/auth/login`
-- **Cuerpo:** `{ "identifier": "username_o_email", "password": "password" }`
-- **Respuesta:** Cookies `access_token` y `refresh_token` (HttpOnly), y datos básicos del usuario en el body.
+*   **ADMIN:** Acceso total a todas las operaciones CRUD, configuración de maestros y **Gestión de Usuarios**.
+*   **EJECUTOR_INTEGRAL:** Permiso para crear, editar y eliminar predios y sus tipos asociados.
+*   **USER:** (Solo lectura) Puede consultar el listado y detalle de predios.
 
-### 2. Me
-`GET /api/v1/auth/me`
-- **Seguridad:** Requiere cookie `access_token` válida.
-- **Respuesta:** Información del usuario autenticado.
+### 5. Gestión de Usuarios (Solo ADMIN)
+*   **Acceso:** Protegido exclusivamente para el rol `ADMIN`.
+*   **Soft Delete y Bloqueo:** Al eliminar un usuario, el sistema realiza un borrado lógico (`deleted = true`) y deshabilita la cuenta automáticamente (`enabled = false`).
+*   **Seguridad:** Las contraseñas se almacenan encriptadas mediante BCrypt.
 
-### 3. Registro (Controlado)
-`POST /api/v1/auth/register`
-- **Seguridad:** Solo accesible por usuarios con rol **ADMIN**.
-- **Cuerpo:** `{ "username": "...", "email": "...", "password": "...", "role": "USER" }`
-- **Respuesta:** Datos del usuario creado.
+### 6. Auditoría y Soft Delete
+*   **Borrados:** El sistema implementa **Soft Delete**. Los registros borrados permanecen en base de datos con la bandera `deleted = true` pero son ignorados por las consultas del sistema.
+*   **Entidades:** Predios, Titulares, Maestros de Tipo y Usuarios soportan Soft Delete.
 
-## Consideraciones de Seguridad
-- Las sesiones se gestionan de forma STATELESS.
-- Los tokens se almacenan en Redis para permitir revocación y control de sesión única.
-- El registro no es público para evitar creación no autorizada de usuarios.
+## Endpoints Principales
+*   `POST /api/v1/predios`: Creación completa (JSON compuesto).
+*   `PUT /api/v1/predios/{id}`: Actualización completa o parcial.
+*   `GET /api/v1/predios`: Listado de predios.
+*   `GET /api/v1/tipos-*`: CRUD de maestros (Solo ADMIN/EJECUTOR).
+*   `GET/POST/PUT/DELETE /api/v1/users`: Gestión de usuarios (Solo ADMIN).
