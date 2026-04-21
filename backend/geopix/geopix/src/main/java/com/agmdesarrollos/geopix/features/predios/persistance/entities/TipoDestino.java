@@ -15,7 +15,6 @@ import org.hibernate.annotations.SQLRestriction;
 @Entity
 @Table(name = "tipos_destino")
 @SQLDelete(sql = "UPDATE tipos_destino SET deleted = true WHERE id=?")
-@SQLRestriction("deleted = false")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TipoDestino {
 
@@ -25,6 +24,8 @@ public class TipoDestino {
 
     String name;
 
+    String description;
+
     @Column(nullable = false)
-    boolean deleted = Boolean.FALSE;
+    Boolean deleted = false;
 }

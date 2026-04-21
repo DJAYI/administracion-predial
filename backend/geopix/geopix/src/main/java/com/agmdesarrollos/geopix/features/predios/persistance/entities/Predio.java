@@ -182,4 +182,7 @@ public class Predio {
 
     @OneToOne(mappedBy = "predio")
     Deuda debt;
+
+    @Column(nullable = false)
+    Boolean deleted = false;
 }

@@ -15,9 +15,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Entity
 @Table(name = "tipos_titulares")
 @SQLDelete(sql = "UPDATE tipos_titulares SET deleted = true WHERE id=?")
-@SQLRestriction("deleted = false")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-
 public class TipoTitularidad {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +23,9 @@ public class TipoTitularidad {
 
     String name;
 
+    String description;
+
     @Column(nullable = false)
-    boolean deleted = Boolean.FALSE;
+    Boolean deleted = false;
 
 }
