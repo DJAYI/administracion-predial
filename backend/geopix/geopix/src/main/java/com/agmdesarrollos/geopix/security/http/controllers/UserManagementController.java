@@ -59,4 +59,10 @@ public class UserManagementController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/disable")
+    public ResponseEntity<Void> disable(@PathVariable UUID id) {
+        service.disableUser(id);
+        return ResponseEntity.noContent().build();
+    }
 }

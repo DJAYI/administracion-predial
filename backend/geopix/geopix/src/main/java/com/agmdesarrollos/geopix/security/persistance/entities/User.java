@@ -2,6 +2,7 @@ package com.agmdesarrollos.geopix.security.persistance.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,7 +23,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @SQLDelete(sql = "UPDATE users SET deleted = true, enabled = false WHERE id=?")
-@SQLRestriction("deleted = false")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -39,7 +40,7 @@ public class User implements UserDetails {
 
     @ManyToOne
     @JoinColumn(name = "role_id")
-    private Role role; // Ejemplo: ADMIN, USER
+    private Role role; // ADMIN, CONTADOR, EJECUTOR_INTEGRAL
 
     @Column(nullable = false)
     @Builder.Default

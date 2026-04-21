@@ -20,6 +20,7 @@ public class UserManagementService {
     private final JpaUserRepository userRepository;
     private final JpaRoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TokenRedisService tokenRedisService;
 
     public List<User> findAll() {
         return userRepository.findAll();
@@ -69,5 +70,13 @@ public class UserManagementService {
     public void delete(UUID id) {
         User user = findById(id);
         userRepository.delete(user);
+    }
+
+    @Transactional
+    public void disableUser(UUID id) {
+        User user = findById(id);
+        user.setEnabled(false);
+        userRepository.save(user);
+        tokenRedisService.revokeAllUserTokens(user.getUsername());
     }
 }
