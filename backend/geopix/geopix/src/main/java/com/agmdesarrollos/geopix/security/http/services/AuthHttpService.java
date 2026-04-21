@@ -70,7 +70,7 @@ public class AuthHttpService {
             throw new RuntimeException("Email already exists");
         }
 
-        String roleName = request.getRole() != null ? request.getRole() : "USER";
+        String roleName = request.getRole() != null ? request.getRole() : "EJECUTOR_INTEGRAL";
         Role role = roleRepository.findByName(roleName)
                 .orElseThrow(() -> new RuntimeException("Role not found: " + roleName));
 
@@ -89,5 +89,9 @@ public class AuthHttpService {
                 .email(savedUser.getEmail())
                 .role(savedUser.getRole().getName())
                 .build();
+    }
+
+    public void logout(HttpServletResponse response) {
+        authenticationService.logout(response);
     }
 }
