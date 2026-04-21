@@ -1,8 +1,12 @@
 package com.agmdesarrollos.geopix.features.predios.http.controllers;
 
+import com.agmdesarrollos.geopix.features.predios.http.dtos.PaginatedResponse;
+import com.agmdesarrollos.geopix.features.predios.http.dtos.DestinyRequest;
+import com.agmdesarrollos.geopix.features.predios.http.dtos.PropertyTypeResponse;
 import com.agmdesarrollos.geopix.features.predios.logic.TipoDestinoService;
-import com.agmdesarrollos.geopix.features.predios.persistance.entities.TipoDestino;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -10,34 +14,44 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/tipos-destino")
+@RequestMapping("/api/v1/destinos")
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyRole('ADMIN')")
 public class TipoDestinoController {
 
     private final TipoDestinoService service;
 
     @GetMapping
-    public ResponseEntity<List<TipoDestino>> findAll() {
-        return ResponseEntity.ok(service.findAll());
+    public ResponseEntity<PaginatedResponse<PropertyTypeResponse>> findAll(
+            @PageableDefault(size = 10) Pageable pageable,
+            @RequestParam(defaultValue = "false") boolean includeDeletes
+    ) {
+        return ResponseEntity.ok(service.findAll(pageable, includeDeletes));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<TipoDestino> findById(@PathVariable Long id) {
+    @GetMapping("/all")
+    public ResponseEntity<List<PropertyTypeResponse>> findAllSimple() {
+        return ResponseEntity.ok(service.findAllSimple());
+    }
+
+    @GetMapping("/{id:[0-9]+}")
+    public ResponseEntity<PropertyTypeResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<TipoDestino> create(@RequestBody TipoDestino entity) {
-        return ResponseEntity.ok(service.create(entity));
+    @PreAuthorize("hasAnyRole('ADMIN', 'EJECUTOR_INTEGRAL')")
+    public ResponseEntity<PropertyTypeResponse> create(@RequestBody DestinyRequest request) {
+        return ResponseEntity.ok(service.create(request));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TipoDestino> update(@PathVariable Long id, @RequestBody TipoDestino entity) {
-        return ResponseEntity.ok(service.update(id, entity));
+    @PreAuthorize("hasAnyRole('ADMIN', 'EJECUTOR_INTEGRAL')")
+    public ResponseEntity<PropertyTypeResponse> update(@PathVariable Long id, @RequestBody DestinyRequest request) {
+        return ResponseEntity.ok(service.update(id, request));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EJECUTOR_INTEGRAL')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
